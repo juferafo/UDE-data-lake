@@ -3,23 +3,28 @@ This script contains helper methods used in the etl.py pipeline
 """
 
 from pyspark.sql import SparkSession
-#from pyspark.sql.functions import udf, col
-#from pyspark.sql.functions import year, month, dayofmonth, hour, weekofyear, date_format
 from pyspark.sql.types import StructType, StructField
 from pyspark.sql.types import StringType, DecimalType, DoubleType, IntegerType, LongType
 
-def create_spark_session():
+def create_spark_session(log_level = "ERROR"):
     """
-    This method returns the SparkSession object. It adds the Apache Hadoop AWS library as configuration parameter.
+    This method returns the SparkSession object. It adds the Apache Hadoop AWS library as configuration parameter. 
+    
+    Args:
+        log_level (str, optional): This parameter allows to control the logLevel details.
+        pyspark defaults to WARN but this method modifies this to ERROR. 
+            Valid log levels include: ALL, DEBUG, ERROR, FATAL, INFO, OFF, TRACE, WARN
     
     Returns:
-        spark (pyspark.sql.session.SparkSession): SparkSession object
+        spark (pyspark.sql.session.SparkSessiony): SparkSession object
     """
     
     spark = SparkSession \
         .builder \
         .config("spark.jars.packages", "org.apache.hadoop:hadoop-aws:2.7.0") \
         .getOrCreate()
+
+    spark.sparkContext.setLogLevel(log_level)
     
     return spark
 
@@ -30,16 +35,19 @@ def write_to_parquet(dataframe, path, mode = "errorifexists", partition_cols = N
     the mode and the partition columns
     
     Arguments:
-        dataframe:
-        path (str):
-        mode (str, optional):
-        partition_cols (str, optional):
+        dataframe (pyspark.sql.dataframe.DataFrame): Spark dataframe
+        path (str): path where the dataframe will be saved in parquet format (local or cloud)
+        mode (str, optional): action taken if the file already exists. 
+            Valid values: append, overwrite, ignore, error or errorifexists
+        partition_cols (str, optional): colums used to partition the data
     """
     
     dataframe.write.parquet(path, mode, partition_cols)
+    print("\nDataframe data saved to {0}".format(path))
+    print("Parquet file partitioned by {0}\n".format(partition_cols))
     
 
-# Schema song-data
+# Schema of the song dataframe
 sch_song_data = StructType([ \
                             StructField("artist_id", StringType(), True), \
                             StructField("artist_latitude", DecimalType(),True), \
@@ -54,7 +62,7 @@ sch_song_data = StructType([ \
                            ])
 
 
-# Schema log-data
+# Schema of the log dataframe
 sch_log_data = StructType([ \
                            StructField("artist", StringType(), True), \
                            StructField("auth", StringType(),True), \

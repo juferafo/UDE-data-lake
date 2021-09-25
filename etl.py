@@ -1,8 +1,3 @@
-# TODO LIST
-# Create an S3 bucket -> include this in the README.md
-# Test this code with EMR
-# Include a flag/s to allow local and cloud functionality for input and output data
-
 import configparser
 import os
 import argparse
@@ -136,7 +131,6 @@ def main():
     Example:
     
         $python etl.py --input_data <PATH_TO_INPUT_DATA> --output_data <PATH_TO_OUTPUT_DATA>
-        
     """
     
     # Initialization of arguments

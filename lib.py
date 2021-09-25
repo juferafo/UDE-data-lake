@@ -1,5 +1,13 @@
 """
-This script contains helper methods used in the etl.py pipeline
+This script contains helper methods and variables used in the etl.py pipeline
+
+Methods:
+    create_spark_session
+    write_to_parquet
+    
+Variables:
+    sch_song_data
+    sch_log_data
 """
 
 from pyspark.sql import SparkSession

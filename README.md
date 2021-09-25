@@ -77,12 +77,80 @@ For convenience and since this project is focused on cloud technologies the abov
 
 ## Extract-Transform-Load (ETL) pipeline
 
+We are going to make of of an ETL pipeline to process the song and log data. The term ETL reffers to a series of steps applied on the raw datasets: Extract Transform and Load. This procedure is a common practice in the Data Engineering community. There are a myriad of packages that can be used to program the ETL logic. We are going to use [Python](https://www.python.org/download/releases/3.0/) as a programming language and [Apache Spark](https://spark.apache.org/) to benefit from the data management efficiency, parallelization and easy of use of this framework. 
 
-### Deploying AWS resources
+Below we will describe in details the optional AWS resources needed to execute this use-case, the Data Lake structure and an overview of the ETL pipeline. 
+
+### S3 deployment
 
 ### Data Lake structure
 
+Our Data Lake will contain the song and log data organized in a [normalized form](https://en.wikipedia.org/wiki/Database_normalization) structure with the shape of a [star-schema](https://www.guru99.com/star-snowflake-data-warehousing.html). The star-schemas are characterized for a fact table that is connected to the dimension tables via foreign keys. The fact table contains data related to measurements, metrics or other core aspects of a business process. In our case, this will be the songs played by the users in a particular session. On the other hand, the dimension tables are used to add descriptive information like, for example, the song, artist or user details.
+
+##### `songplays` fact table
+
+```
+songplay_id INT,
+start_time TIMESTAMP, 
+user_id INT, 
+level VARCHAR, 
+song_id VARCHAR, 
+artist_id VARCHAR, 
+session_id INT, 
+location VARCHAR, 
+user_agent VARCHAR
+```
+
+##### `artist` dimension table
+
+```
+artist_id VARCHAR,
+artist_name VARCHAR,
+artist_location VARCHAR,
+artist_latitude INT,
+artist_longitude INT
+```
+
+#### `song` dimension table
+
+```
+song_id VARCHAR,
+title VARCHAR,
+artist_id VARCHAR,
+year INT,
+duration FLOAT
+```
+
+##### `time` dimension table
+
+```
+start_time TIMESTAMP,
+hour INT,
+day INT,
+week INT,
+month INT,
+year INT,
+weekday INT
+```
+
+##### `user` dimension table
+
+```
+user_id INT,
+first_name VARCHAR,
+last_name VARCHAR,
+gender VARCHAR,
+level VARCHAR
+```
+
+### Pipeline logic
+
+
+The target is to save the following tables in separate folders within the Data Lake. 
+
 ### Pipeline execution
+
+
 
 ## Requirements
 

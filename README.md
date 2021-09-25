@@ -6,10 +6,86 @@ In the use-case presented here we are going to build a Data Lake on top of [Amaz
 
 In [this repository](https://github.com/juferafo/UDE-redshift) we explored the same case scenario but using a Data Warehouse to host the data which is a valid alternative of the use-case presented here. Nowadays, the usage of Data Lakes is gaining popularity due to the posibility of storing both structured and un-structured data and fast connection with other cloud services within the same cloud provider. 
 
-### Project datasets
+## Project datasets
+
+As mentioned in the introductions, we are going to process the data the song dataset and the log dataset. As described below, these contain different information and, therefore, different schema.
+
+### Song dataset
+
+The song dataset is a subset of the [Million Song Dataset](http://millionsongdataset.com/) and it contains information about the songs available music application. The records of this dataset are categorized, among other fields, by artist ID, song ID, title, duration, etc... Each entry or row is written as a JSON file. The JSONs are organized altogether in folders with the following structure:
+
+```
+./data/song_data/
+└── A
+    ├── A
+    │   ├── A
+    │   ├── B
+    │   └── C
+    └── B
+        ├── A
+        ├── B
+        └── C
+```
+
+Below you can find an example of a song data file.
+
+```
+{
+    "num_songs": 1, 
+    "artist_id": "ARJIE2Y1187B994AB7", 
+    "artist_latitude": null,
+    "artist_longitude": null,
+    "artist_location": "",
+    "artist_name": "Line Renaud",
+    "song_id": "SOUPIRU12A6D4FA1E1",
+    "title": "Der Kleine Dompfaff",
+    "duration": 152.92036,
+    "year": 0
+}
+```
+
+### Log dataset
+
+The log dataset contains information about the application usage (user ID, registration type, song listened, etc...). It is build from the simulator of events [eventsim](https://github.com/Interana/eventsim) and, like the song dataset, the information is stored in JSON files. Below you can find the schema of the log dataset.
+
+```
+{
+  artist TEXT,
+  auth TEXT,
+  firstName TEXT,
+  gender TEXT,
+  itemInSession INT,
+  lastName TEXT,
+  length DOUBLE,
+  level TEXT,
+  location TEXT,
+  method TEXT,
+  page TEXT,
+  registration DOUBLE,
+  sessionId INT,
+  song TEXT,
+  status INT,
+  ts FLOAT,
+  userId INT
+}
+```
+
+For convenience and since this project is focused on cloud technologies the above datasets are placed in the below mentioned S3 buckets. However, it is also possible to employ the `./data` file if we want to retrieve the source data from local.
+
+* Song data: `s3://udacity-dend/song_data`
+* Log data: `s3://udacity-dend/log_data`
+
+## Extract-Transform-Load (ETL) pipeline
+
 
 ### Deploying AWS resources
 
 ### Data Lake structure
 
-### Extract-Transform-Load (ETL) pipeline
+### Pipeline execution
+
+## Requirements
+
+1. [`boto3`](https://aws.amazon.com/en/sdk-for-python/)
+2. [`Apache Spark`](http://spark.apache.org/docs/2.1.0/api/python/index.html#)
+3. [`configparser`](https://docs.python.org/3/library/configparser.html)

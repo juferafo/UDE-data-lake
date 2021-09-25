@@ -79,9 +79,7 @@ For convenience and since this project is focused on cloud technologies the abov
 
 We are going to make of of an ETL pipeline to process the song and log data. The term ETL reffers to a series of steps applied on the raw datasets: Extract Transform and Load. This procedure is a common practice in the Data Engineering community. There are a myriad of packages that can be used to program the ETL logic. We are going to use [Python](https://www.python.org/download/releases/3.0/) as a programming language and [Apache Spark](https://spark.apache.org/) to benefit from the data management efficiency, parallelization and easy of use of this framework. 
 
-Below we will describe in details the optional AWS resources needed to execute this use-case, the Data Lake structure and an overview of the ETL pipeline. 
-
-### S3 deployment
+Below we will describe in details the optional AWS resources needed to test this repository, the Data Lake structure and an overview of the ETL pipeline. 
 
 ### Data Lake structure
 
@@ -143,8 +141,21 @@ gender VARCHAR,
 level VARCHAR
 ```
 
-### Pipeline logic
+### S3 bucket creation
 
+Below you can find how to create an Amazon S3 bucket to be used as Data Lake. There are [multiple ways](https://docs.aws.amazon.com/AmazonS3/latest/userguide/create-bucket-overview.html) to create an S3 bucket. Here we describe how to achieve this via the AWS SDK with the command [`mb`] (https://awscli.amazonaws.com/v2/documentation/api/latest/reference/s3/mb.html)
+
+The below command will create a new S3 bucket with the name `<BUCKET_NAME>` in the `us-west-1` region.
+
+```
+$ aws s3 mb s3://<BUCKET_NAME> --region us-west-1
+```
+
+Creates a new S3 bucket. To create a bucket, 
+
+When creating a new bucket, take into account that you must create an AWS account and have a valid [AWS credentials](https://docs.aws.amazon.com/cli/latest/userguide/cli-configure-files.html). Also, keep in mind the [creation rules](https://docs.aws.amazon.com/AmazonS3/latest/userguide/bucketnamingrules.html) to avoid problems related to naming conventions.
+
+### Pipeline logic
 
 The target is to save the following tables in separate folders within the Data Lake. 
 

@@ -1,18 +1,18 @@
 # UDE-data-lake
 
-Data Lakes are widely used by organizations as part of their infrastructure to maintain data. Frecuently companies build these in the cloud. Several cloud providers (Google, Microsoft or Amazon) offer services to store objects (blobs) in a long-term fashion, with high data availability, security, performance and scalability. These features are important to the end user since they make possible to built a datalake that suits the needs of the company like, for example, include different entry points for cold and hot data. 
+Data Lakes are widely used by organizations as part of their infrastructure to host both structured (tabular format data like CSVs or JSONS) and non-structured (images, videos, etc...) information. In recent times many companies choose the cloud as the platform where the Data Lake will be maintained since cloud providers (Google, Microsoft or Amazon) offer services to store objects (blobs) in a long-term fashion, with high data availability, fully managed security, high performance, scalability and different storage types for hot/cold data. These features are important to the end user since it makes possible to create a Data Lake with enough resources to suit the needs of the company or, in other words, the problem of under- or over-provissioning of resources is avoided. 
 
-In the use-case presented here we are going to build a Data Lake on top of [Amazon S3](https://aws.amazon.com/s3/?did=ft_card&trk=ft_card). Our goal is to store the data contained in the two datasets (song and log datasets) described below. Together, these datasets provide insights on the customer usage of a music application. When the customer plays a song, signs-in or out new records are included in the log dataset. We can use both repositories to answer questions like: what is the top 10 songs played this week? how long do customers make use of the paid tier subscription? 
+In the use-case presented here a Data Lake will be build on top of [Amazon S3](https://aws.amazon.com/s3/?did=ft_card&trk=ft_card) and a data pipeline will be used to ingest data on the Data Lake. To this end, we will work with two sets of data: the song and log datasets. With the information contained in these datasets we can retrieve valuable insights on the customer's usage of a music app like, for example, what is the top 10 songs played this week? or, how long do customers make use of the paid tier subscription? 
 
-In [this repository](https://github.com/juferafo/UDE-redshift) we explored the same case scenario but using a Data Warehouse to host the data which is a valid alternative of the use-case presented here. Nowadays, the usage of Data Lakes is gaining popularity due to the posibility of storing both structured and un-structured data and fast connection with other cloud services within the same cloud provider. 
+In [this repository](https://github.com/juferafo/UDE-redshift) we explored the same scenario but using a Data Warehouse instead of a Data Lake. This is a valid alternative to the work presented here as we are working with tabular data. Nowadays, the usage of Data Lakes is gaining popularity due to the posibility of storing both structured and un-structured data and fast integration with other cloud services and APIs. 
 
 ## Project datasets
 
-As mentioned in the introductions, we are going to process the data the song dataset and the log dataset. As described below, these contain different information and, therefore, different schema.
+As mentioned in the introductions, we are going to process the information present in the song and the log dataset. As described below, they encapsulate different information and, therefore, their schema is distinct.
 
 ### Song dataset
 
-The song dataset is a subset of the [Million Song Dataset](http://millionsongdataset.com/) and it contains information about the songs available music application. The records of this dataset are categorized, among other fields, by artist ID, song ID, title, duration, etc... Each entry or row is written as a JSON file. The JSONs are organized altogether in folders with the following structure:
+The song dataset is a subset of the [Million Song Dataset](http://millionsongdataset.com/) and it contains information about the songs available in the music app. The records are categorized, among other fields, by artist ID, song ID, title, duration, etc... Each row is written as a JSON with the schema shown below and file organized in folders with the following structure.
 
 ```
 ./data/song_data/
@@ -27,7 +27,7 @@ The song dataset is a subset of the [Million Song Dataset](http://millionsongdat
         └── C
 ```
 
-Below you can find an example of a song data file.
+Example of a song data file.
 
 ```
 {
@@ -46,7 +46,7 @@ Below you can find an example of a song data file.
 
 ### Log dataset
 
-The log dataset contains information about the application usage (user ID, registration type, song listened, etc...). It is build from the simulator of events [eventsim](https://github.com/Interana/eventsim) and, like the song dataset, the information is stored in JSON files. Below you can find the schema of the log dataset.
+The log dataset contains information about the user interaction with the app (sign-in/out, user ID, registration type, listened songs, etc...). This dataset was build from the events simulator [eventsim](https://github.com/Interana/eventsim) and, like the song dataset, the information is stored in JSON files. Below you can find the schema of the log dataset.
 
 ```
 {
@@ -70,20 +70,18 @@ The log dataset contains information about the application usage (user ID, regis
 }
 ```
 
-For convenience and since this project is focused on cloud technologies the above datasets are placed in the below mentioned S3 buckets. However, it is also possible to employ the `./data` file if we want to retrieve the source data from local.
+For convenience the above datasets are placed in the S3 buckets showen below. However, it is also possible to employ the `./data` file if we want to work with this data from local.
 
-* Song data: `s3://udacity-dend/song_data`
-* Log data: `s3://udacity-dend/log_data`
+* Song data bucket: `s3://udacity-dend/song_data`
+* Log data bucket: `s3://udacity-dend/log_data`
 
 ## Extract-Transform-Load (ETL) pipeline
 
-We are going to make of of an ETL pipeline to process the song and log data. The term ETL reffers to a series of steps applied on the raw datasets: Extract Transform and Load. This procedure is a common practice in the Data Engineering community. There are a myriad of packages that can be used to program the ETL logic. We are going to use [Python](https://www.python.org/download/releases/3.0/) as a programming language and [Apache Spark](https://spark.apache.org/) to benefit from the data management efficiency, parallelization and easy of use of this framework. 
-
-Below we will describe in details the optional AWS resources needed to test this repository, the Data Lake structure and an overview of the ETL pipeline. 
+We are going to make use of an ETL pipeline to process and ingest the song and log data into the Data Lake. ETLs are widely used in the Data Engineering community ant it reffers to a series of steps (Extract, Transform and Load) applied on the raw data. We are going to use [Python](https://www.python.org/download/releases/3.0/) as a programming language and [Apache Spark](https://spark.apache.org/) to benefit from the data management efficiency, task parallelization and easy of use. We must keep in mind that there are a myriad of packages that can be used to implement the ETL like, for example, [Apache Beam](https://beam.apache.org/) or [Apache Hadoop](http://hadoop.apache.org/). Below we describe the AWS resources needed to test this repository, the Data Lake structure and an overview of the ETL pipeline.
 
 ### Data Lake structure
 
-Our Data Lake will contain the song and log data organized in a [normalized form](https://en.wikipedia.org/wiki/Database_normalization) structure with the shape of a [star-schema](https://www.guru99.com/star-snowflake-data-warehousing.html). The star-schemas are characterized for a fact table that is connected to the dimension tables via foreign keys. The fact table contains data related to measurements, metrics or other core aspects of a business process. In our case, this will be the songs played by the users in a particular session. On the other hand, the dimension tables are used to add descriptive information like, for example, the song, artist or user details.
+The Data Lake will accomodate the song and log data organized in [normalized form](https://en.wikipedia.org/wiki/Database_normalization) with the shape of a [star-schema](https://www.guru99.com/star-snowflake-data-warehousing.html). The star-schemas have a characteristic structure modeled by a single fact table that is connected to the dimension tables via foreign keys. While the fact table contains data related to measurements, metrics or other core aspects of a business process, the dimension tables are used to add descriptive data. In our case the fact table will include data of the songs played by the users during a particular session and the dimension tables will provide additional details on the song, the artist and user details, for example. Below you can find the schema of the fact and dimension tables.
 
 ##### `songplays` fact table
 
@@ -143,25 +141,19 @@ level VARCHAR
 
 ### S3 bucket creation
 
-Below you can find how to create an Amazon S3 bucket to be used as Data Lake. There are [multiple ways](https://docs.aws.amazon.com/AmazonS3/latest/userguide/create-bucket-overview.html) to create an S3 bucket. Here we describe how to achieve this via the AWS SDK with the command [`mb`] (https://awscli.amazonaws.com/v2/documentation/api/latest/reference/s3/mb.html)
-
-The below command will create a new S3 bucket with the name `<BUCKET_NAME>` in the `us-west-1` region.
+We are going to build the Data Lake on top of Amazon S3. In S3 the data is stored inside of [buckets](https://docs.aws.amazon.com/AmazonS3/latest/userguide/UsingBucket.html). There are [multiple ways](https://docs.aws.amazon.com/AmazonS3/latest/userguide/create-bucket-overview.html) to create an S3 bucket: from the AWS portal, using the AWS SDK or via any of the supported APIs. Below we describe how to create a bucket via the AWS SDK with the command [`mb`] (https://awscli.amazonaws.com/v2/documentation/api/latest/reference/s3/mb.html) in the `us-west-1` region.
 
 ```
 $ aws s3 mb s3://<BUCKET_NAME> --region us-west-1
 ```
 
-Creates a new S3 bucket. To create a bucket, 
-
-When creating a new bucket, take into account that you must create an AWS account and have a valid [AWS credentials](https://docs.aws.amazon.com/cli/latest/userguide/cli-configure-files.html). Also, keep in mind the [creation rules](https://docs.aws.amazon.com/AmazonS3/latest/userguide/bucketnamingrules.html) to avoid problems related to naming conventions.
+When running the above command, take into account that you must create an AWS account and have a valid [AWS credentials](https://docs.aws.amazon.com/cli/latest/userguide/cli-configure-files.html). Also, keep in mind the [creation rules](https://docs.aws.amazon.com/AmazonS3/latest/userguide/bucketnamingrules.html) to avoid problems related to naming conventions.
 
 ### Pipeline logic
 
 The target is to save the following tables in separate folders within the Data Lake. 
 
 ### Pipeline execution
-
-
 
 ## Requirements
 

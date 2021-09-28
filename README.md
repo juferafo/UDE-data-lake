@@ -202,6 +202,26 @@ def create_spark_session(log_level = "ERROR"):
 
 ### `./etl.py` usage
 
+Below you can find the usage help of the script `./etl.py`. It can be executed with two flags `--input_data` and `--output_data` to specify the location of the input and output data (local or cloud).
+
+```
+usage: etl.py [-h] [--input_data INPUT_DATA] [--output_data OUTPUT_DATA]
+
+optional arguments:
+  -h, --help            show this help message and exit
+  --input_data INPUT_DATA
+                        Path of the input data where the log and song datasets are located.
+  --output_data OUTPUT_DATA
+                        Path of the output data where the parquet files will be written.
+```
+
+If `--input_data` is not provided the song and log data will be read from `s3://udacity-dend/song-data` and `s3://udacity-dend/log-data` respectively. On the other hand, if `--output_data` is not specified the parquet files will be written locally in the directory `./sparkify-output-data`
+
+Usage example
+
+```linux
+$ python etl.py --output_data s3://<BUCKET_NAME>
+```
 
 ## Requirements
 

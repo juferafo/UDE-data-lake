@@ -26,7 +26,7 @@ def process_song_data(spark, input_data, output_data):
     global df_song, song_data
     
     # Song data
-    song_data = os.path.join(input_data, "song-data/A/A/A/*.json")
+    song_data = os.path.join(input_data, "song-data/*/*/*/*.json")
     df_song = spark.read.json(song_data, schema = sch_song_data)
     df_song.dropna(how='all')
 
@@ -182,7 +182,7 @@ def main():
     print("Processing Song dataset\n")
     process_song_data(spark, input_path, output_path)    
     print("Processing Log dataset\n")
-    process_log_data(spark, input_path, output_path)
+    #process_log_data(spark, input_path, output_path)
     
     
 if __name__ == "__main__":

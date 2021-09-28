@@ -1,10 +1,10 @@
 # UDE-data-lake
 
-Data Lakes are widely used by organizations as part of their infrastructure to host both structured (tabular format data like CSVs or JSONS) and non-structured (images, videos, etc...) information. In recent times many companies choose the cloud as the platform where the Data Lake will be maintained since cloud providers (Google, Microsoft or Amazon) offer services to store objects (blobs) in a long-term fashion, with high data availability, fully managed security, high performance, scalability and different storage types for hot/cold data. These features are important to the end user since it makes possible to create a Data Lake with enough resources to suit the needs of the company or, in other words, the problem of under- or over-provissioning of resources is avoided. 
+Data Lakes are widely used by organizations as part of their infrastructure to host both structured (tabular format data like CSVs or JSONS) and non-structured (images, videos, etc...) information. In recent times many companies choose the cloud as the platform where the Data Lake will be maintained since cloud providers (Google, Microsoft, or Amazon) offer services to store objects (blobs) in a long-term fashion, with high data availability, fully managed security, high performance, scalability and different storage types for hot/cold data. These features are important to the end user since it makes possible to create a Data Lake with enough resources to suit the needs of the company or, in other words, the problem of under- or over-provisioning of resources is avoided. 
 
-In the use-case presented here a Data Lake will be build on top of [Amazon S3](https://aws.amazon.com/s3/?did=ft_card&trk=ft_card) and a data pipeline will be used to ingest data on the Data Lake. To this end, we will work with two sets of data: the song and log datasets. With the information contained in these datasets we can retrieve valuable insights on the customer's usage of a music app like, for example, what is the top 10 songs played this week? or, how long do customers make use of the paid tier subscription? 
+In the use-case presented here a Data Lake will be built on top of [Amazon S3](https://aws.amazon.com/s3/?did=ft_card&trk=ft_card) and a data pipeline will be used to ingest data on the Data Lake. To this end, we will work with two sets of data: the song and log datasets. With the information contained in these datasets we can retrieve valuable insights on the customer's usage of a music app like, for example, what is the top 10 songs played this week? or, how long do customers make use of the paid tier subscription? 
 
-In [this repository](https://github.com/juferafo/UDE-redshift) we explored the same scenario but using a Data Warehouse instead of a Data Lake. This is a valid alternative to the work presented here as we are working with tabular data. Nowadays, the usage of Data Lakes is gaining popularity due to the posibility of storing both structured and un-structured data and fast integration with other cloud services and APIs. 
+In [this repository](https://github.com/juferafo/UDE-redshift) we explored the same scenario but using a Data Warehouse instead of a Data Lake. This is a valid alternative to the work presented here as we are working with tabular data. Nowadays, the usage of Data Lakes is gaining popularity due to the possibility of storing both structured and un-structured data and fast integration with other cloud services and APIs.
 
 ## Project datasets
 
@@ -70,18 +70,18 @@ The log dataset contains information about the user interaction with the app (si
 }
 ```
 
-For convenience the above datasets are placed in the S3 buckets showen below. However, it is also possible to employ the `./data` file if we want to work with this data from local.
+For convenience the above datasets are placed in the S3 buckets shown below. However, it is also possible to employ the `./data` file if we want to work with this data from local.
 
 * Song data bucket: `s3://udacity-dend/song_data`
 * Log data bucket: `s3://udacity-dend/log_data`
 
 ## Extract-Transform-Load (ETL) pipeline
 
-We are going to make use of an ETL pipeline to process and ingest the song and log data into the Data Lake. ETLs are widely used in the Data Engineering community ant it reffers to a series of steps (Extract, Transform and Load) applied on the raw data. We are going to use [Python](https://www.python.org/download/releases/3.0/) as a programming language and [Apache Spark](https://spark.apache.org/) to benefit from the data management efficiency, task parallelization and easy of use. We must keep in mind that there are a myriad of packages that can be used to implement the ETL like, for example, [Apache Beam](https://beam.apache.org/) or [Apache Hadoop](http://hadoop.apache.org/). Below we describe the AWS resources needed to test this repository, the Data Lake structure and an overview of the ETL pipeline.
+We are going to make use of an ETL pipeline to process and ingest the song and log data into the Data Lake. ETLs are widely used in the Data Engineering community ant it refers to a series of steps (Extract, Transform and Load) applied on the raw data. We are going to use [Python](https://www.python.org/download/releases/3.0/) as a programming language and [Apache Spark](https://spark.apache.org/) to benefit from the data management efficiency, task parallelization and ease of use. We must keep in mind that there are a myriad of packages that can be used to implement the ETL like, for example, [Apache Beam](https://beam.apache.org/) or [Apache Hadoop](http://hadoop.apache.org/). Below we describe the AWS resources needed to test this repository, the Data Lake structure, and an overview of the ETL pipeline.
 
 ### Data Lake structure
 
-The Data Lake will accomodate the song and log data organized in [normalized form](https://en.wikipedia.org/wiki/Database_normalization) with the shape of a [star-schema](https://www.guru99.com/star-snowflake-data-warehousing.html). The star-schemas have a characteristic structure modeled by a single fact table that is connected to the dimension tables via foreign keys. While the fact table contains data related to measurements, metrics or other core aspects of a business process, the dimension tables are used to add descriptive data. In our case the fact table will include data of the songs played by the users during a particular session and the dimension tables will provide additional details on the song, the artist and user details, for example. Below you can find the schema of the fact and dimension tables.
+The Data Lake will accommodate the song and log data organized in [normalized form](https://en.wikipedia.org/wiki/Database_normalization) with the shape of a [star-schema](https://www.guru99.com/star-snowflake-data-warehousing.html). The star-schemas have a characteristic structure modeled by a single fact table that is connected to the dimension tables via foreign keys. While the fact table contains data related to measurements, metrics or other core aspects of a business process, the dimension tables are used to add descriptive data. In our case the fact table will include data of the songs played by the users during a particular session and the dimension tables will provide additional details on the song, the artist and user details, for example. Below you can find the schema of the fact and dimension tables.
 
 ##### `songplays` fact table
 
@@ -153,7 +153,7 @@ When running the above command, take into account that you must create an AWS ac
 
 The pipeline code can be found in the script `./etl.py`. The main function of this code performs the following steps:
 
-1. **User authentication**: the AWS access key and the AWS secret key of the user are retrieved from the file `./dl.cfg` and addded as environmental variables. [Here](https://boto3.amazonaws.com/v1/documentation/api/latest/guide/credentials.html) you can find more information about credentials authentication with `boto3`.
+1. **User authentication**: the AWS access key and the AWS secret key of the user are retrieved from the file `./dl.cfg` and added as environmental variables. [Here](https://boto3.amazonaws.com/v1/documentation/api/latest/guide/credentials.html) you can find more information about credentials authentication with `boto3`.
 
 User authentication coded in `./etl.py`
 
@@ -198,11 +198,11 @@ def create_spark_session(log_level = "ERROR"):
 
 3. **Song data processing**: the song files are read from their cloud location at `s3://udacity-dend/song-data/*/*/*/*.json` and the data is loaded in memory as a Spark [DataFrame](https://spark.apache.org/docs/latest/api/python/reference/api/pyspark.sql.DataFrame.html). From this data we can extract the `songs` and `artists` tables and save this information as parquet files in the storage bucket created previously.
 
-4. **Log data processing**: similar to the song data, the log entries are loaded as a Data Frame. At this stage, we can retrieve the `songplays` fact table (by joining the song and log dataframes) and the `time` and `users` tables. Like in the previous step, these tables are saved as parquet files in the storage bucket created previously.
+4. **Log data processing**: like the song data, the log entries are loaded as a Data Frame. At this stage, we can retrieve the `songplays` fact table (by joining the song and log DataFrames) and the `time` and `users` tables. Like in the previous step, these tables are saved as parquet files in the storage bucket created previously.
 
 ### `./etl.py` usage
 
-Below you can find the usage help of the script `./etl.py`. It can be executed with two flags `--input_data` and `--output_data` to specify the location of the input and output data (local or cloud).
+Below you can find the usage help of `./etl.py`. This script can be executed with two flags `--input_data` and `--output_data` that refer to the input and output data location (local or cloud).
 
 ```
 usage: etl.py [-h] [--input_data INPUT_DATA] [--output_data OUTPUT_DATA]

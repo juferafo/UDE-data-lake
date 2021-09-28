@@ -151,9 +151,57 @@ When running the above command, take into account that you must create an AWS ac
 
 ### Pipeline logic
 
-The target is to save the following tables in separate folders within the Data Lake. 
+The pipeline code can be found in the script `./etl.py`. The main function of this code performs the following steps:
 
-### Pipeline execution
+1. **User authentication**: the AWS access key and the AWS secret key of the user are retrieved from the file `./dl.cfg` and addded as environmental variables. [Here](https://boto3.amazonaws.com/v1/documentation/api/latest/guide/credentials.html) you can find more information about credentials authentication with `boto3`.
+
+User authentication coded in `./etl.py`
+
+```python
+    config = configparser.ConfigParser()
+    config.read('dl.cfg')
+
+    os.environ['AWS_ACCESS_KEY_ID']=config['AWS_SECURITY']['AWS_ACCESS_KEY_ID']
+    os.environ['AWS_SECRET_ACCESS_KEY']=config['AWS_SECURITY']['AWS_SECRET_ACCESS_KEY']
+```
+
+Format of `./dl.cfg` for user credentials
+
+```
+[AWS_SECURITY]
+AWS_ACCESS_KEY_ID=<AWS_ACCESS_KEY_ID>
+AWS_SECRET_ACCESS_KEY=<AWS_SECRET_ACCESS_KEY>
+```
+
+2. **Spark Session**: Definition of the [SparkSession](https://spark.apache.org/docs/latest/api/python/reference/api/pyspark.sql.SparkSession.html) variable. This parameter is the main entry point of the Apache Spark functionality or, in other words, the variable that we will employ to make use of the Spark SQL and DataFrame features. The Spark Session is instantiated in `./etl.py`.
+
+``` python
+    spark = create_spark_session()
+```
+
+The method `create_spark_session` can be found in `./lib.py`
+
+``` python
+def create_spark_session(log_level = "ERROR"):
+    
+    [...]
+        
+    spark = SparkSession \
+        .builder \
+        .config("spark.jars.packages", "org.apache.hadoop:hadoop-aws:2.7.0") \
+        .getOrCreate()
+
+    spark.sparkContext.setLogLevel(log_level)
+    
+    return spark
+```
+
+3. **Song data processing**: the song files are read from their cloud location at `s3://udacity-dend/song-data/*/*/*/*.json` and the data is loaded in memory as a Spark [DataFrame](https://spark.apache.org/docs/latest/api/python/reference/api/pyspark.sql.DataFrame.html). From this data we can extract the `songs` and `artists` tables and save this information as parquet files in the storage bucket created previously.
+
+4. **Log data processing**: similar to the song data, the log entries are loaded as a Data Frame. At this stage, we can retrieve the `songplays` fact table (by joining the song and log dataframes) and the `time` and `users` tables. Like in the previous step, these tables are saved as parquet files in the storage bucket created previously.
+
+### `./etl.py` usage
+
 
 ## Requirements
 

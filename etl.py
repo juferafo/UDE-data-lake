@@ -182,7 +182,7 @@ def main():
     print("Processing Song dataset\n")
     process_song_data(spark, input_path, output_path)    
     print("Processing Log dataset\n")
-    #process_log_data(spark, input_path, output_path)
+    process_log_data(spark, input_path, output_path)
     
     
 if __name__ == "__main__":

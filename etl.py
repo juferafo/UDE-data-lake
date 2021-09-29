@@ -33,6 +33,7 @@ def process_song_data(spark, input_data, output_data):
     # songs table
     print("Processing songs table")
     songs_table = df_song.select("song_id", "title", "artist_id", "year", "duration")
+    songs_table = songs_table.drop_duplicates(subset=["song_id"])
     songs_table.printSchema()
     
     # songs table written to parquet file partitioned by year and artist
@@ -45,6 +46,7 @@ def process_song_data(spark, input_data, output_data):
     # artists table
     print("Processing artists table")
     artists_table = df_song.select("artist_id", "artist_name", "artist_location", "artist_latitude", "artist_longitude")
+    artists_table = artists_table.drop_duplicates(subset=["artist_id"])
     artists_table.printSchema()
     
     # artists table written to parquet files
@@ -78,6 +80,8 @@ def process_log_data(spark, input_data, output_data):
     
     # users table
     users_table = df_log.select("userId", "firstName", "lastName", "gender", "userAgent")
+    users_table = users_table.drop_duplicates(subset=["userId"])
+    users_table.printSchema()
     
     # users table written to parquet
     users_out = os.path.join(output_data, "users.parquet")
@@ -93,6 +97,7 @@ def process_log_data(spark, input_data, output_data):
         withColumn("month", month(to_timestamp(col("start_time")))).\
         withColumn("songplay_id", monotonically_increasing_id()).\
         where(col("page") == "NextSong")
+    songplays_table.printSchema()
     
     # songplays table written to parquet file partitioned by year and month
     songplays_out = os.path.join(output_data, "songplays.parquet")
@@ -109,6 +114,7 @@ def process_log_data(spark, input_data, output_data):
         withColumn("day", dayofmonth(to_timestamp(col("start_time")))).\
         withColumn("week", weekofyear(to_timestamp(col("start_time")))).\
         withColumn("weekday", dayofweek(to_timestamp(col("start_time"))))
+    time_table.printSchema()
     
     # time table written to parquet file partitioned by year and month
     time_out = os.path.join(output_data, "time.parquet")
